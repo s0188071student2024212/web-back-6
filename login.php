@@ -23,7 +23,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         if ($admin && password_verify($password, $admin['password'])) {
             $_SESSION['admin_id'] = $admin['admin_id'];
             $_SESSION['user_type'] = 'admin'; // тип пользователя - админ
-            header("Location: admin_panel.php"); // страница администратора
+            header("Location: adminpage.php"); // страница администратора
             exit();
         } else {
             echo "<p style='color:red;'>Неверный логин или пароль.</p>";
