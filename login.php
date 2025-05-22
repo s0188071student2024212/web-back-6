@@ -1,19 +1,33 @@
 <?php
-session_start(); 
+session_start();
 require_once 'db_connection.php';
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $login = $_POST['login'];
     $password = $_POST['password'];
+
+    // проверка на вход обычного пользователя
     $stmt = $pdo->prepare("SELECT * FROM users WHERE login = ?");
     $stmt->execute([$login]);
     $user = $stmt->fetch(PDO::FETCH_ASSOC);
     if ($user && password_verify($password, $user['password'])) {
-        $_SESSION['user_id'] = $user['user_id']; // Устанавливаем ID пользователя в сессии
-        header("Location: edit.php"); // Перенаправляем на страницу редактирования данных
+        $_SESSION['user_id'] = $user['user_id'];
+        $_SESSION['user_type'] = 'user'; // тип пользователя обычный
+        header("Location: edit.php");
         exit();
     } else {
-        echo "<p style='color:red;'>Неверный логин или пароль.</p>";
+        // проверка на вход администратора
+        $stmt = $pdo->prepare("SELECT * FROM admins WHERE login = ?");
+        $stmt->execute([$login]);
+        $admin = $stmt->fetch(PDO::FETCH_ASSOC);
+        if ($admin && password_verify($password, $admin['password'])) {
+            $_SESSION['admin_id'] = $admin['admin_id'];
+            $_SESSION['user_type'] = 'admin'; // тип пользователя - админ
+            header("Location: admin_panel.php"); // страница администратора
+            exit();
+        } else {
+            echo "<p style='color:red;'>Неверный логин или пароль.</p>";
+        }
     }
 }
 ?>
