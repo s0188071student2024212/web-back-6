@@ -3,7 +3,7 @@ session_start();
 require_once 'db_connection.php';
 
 // Проверка авторизации администратора
-if (!isset($_SESSION['admin_logged_in']) {
+if (!isset($_SESSION['admin_logged_in'])) {
     header("Location: login.php");
     exit();
 }
@@ -112,67 +112,5 @@ unset($user); // Разрываем ссылку
             <a href="logout.php" class="btn-logout">Выйти из админ-панели</a>
         </div>
     </div>
-</body>
-</html>
-<!DOCTYPE html>
-<html lang="ru">
-<head>
-    <meta charset="UTF-8">
-    <title>Страница администратора</title>
-    <style>
-        table {
-            width: 100%;
-            border-collapse: collapse;
-        }
-        th, td {
-            border: 1px solid black;
-            padding: 8px;
-            text-align: left;
-        }
-    </style>
-    <script>
-        function confirmDelete(userId) {
-            if (confirm("Вы уверены, что хотите удалить пользователя?")) {
-                window.location.href = 'delete_user.php?user_id=' + userId;
-            }
-        }
-    </script>
-</head>
-<body>
-
-<h1>Страница администратора</h1>
-
-<table>
-    <tr>
-        <th>ID</th>
-        <th>Логин</th>
-        <th>ФИО</th>
-        <th>Телефон</th>
-        <th>Email</th>
-        <th>Дата рождения</th>
-        <th>Пол</th>
-        <th>О себе</th>
-        <th>Любимые ЯП</th>
-        <th>Действия</th>
-    </tr>
-    <?php foreach ($users as $user): ?>
-        <tr>
-            <td><?php echo $user['user_id']; ?></td>
-            <td><?php echo $user['login']; ?></td>
-            <td><?php echo $user['fio']; ?></td>
-            <td><?php echo $user['phone']; ?></td>
-            <td><?php echo $user['email']; ?></td>
-            <td><?php echo $user['dob']; ?></td>
-            <td><?php echo $user['gender']; ?></td>
-            <td><?php echo $user['bio']; ?></td>
-            <td><?php echo $user['langs']; ?></td>
-            <td>
-                <a href="edit_user.php?user_id=<?php echo $user['user_id']; ?>">Редактировать</a>
-                <button onclick="confirmDelete(<?php echo $user['user_id']; ?>)">Удалить</button>
-            </td>
-        </tr>
-    <?php endforeach; ?>
-</table>
-
 </body>
 </html>
