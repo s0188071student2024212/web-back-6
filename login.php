@@ -1,31 +1,37 @@
 <?php
-session_start();
+session_start(); 
 require_once 'db_connection.php';
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $login = $_POST['login'];
     $password = $_POST['password'];
-
-    // проверка на вход обычного пользователя
-    $stmt = $pdo->prepare("SELECT * FROM users WHERE login = ?");
+    
+    // Сначала проверяем, является ли пользователь администратором
+    $stmt = $pdo->prepare("SELECT * FROM admins WHERE login = ?");
     $stmt->execute([$login]);
-    $user = $stmt->fetch(PDO::FETCH_ASSOC);
-    if ($user && password_verify($password, $user['password'])) {
-        $_SESSION['user_id'] = $user['user_id'];
-        $_SESSION['user_type'] = 'user'; // тип пользователя обычный
-        header("Location: edit.php");
+    $admin = $stmt->fetch(PDO::FETCH_ASSOC);
+    
+    if ($admin && password_verify($password, $admin['password'])) {
+        // Если это администратор
+        $_SESSION['admin_id'] = $admin['admin_id'];
+        $_SESSION['user_type'] = 'admin';
+        header("Location: adminpage.php"); // Перенаправляем на страницу администратора
         exit();
-    } else {
-        // проверка на вход администратора
-        $stmt = $pdo->prepare("SELECT * FROM admins WHERE login = ?");
+    } 
+    else {
+        // Если не администратор, проверяем обычного пользователя
+        $stmt = $pdo->prepare("SELECT * FROM users WHERE login = ?");
         $stmt->execute([$login]);
-        $admin = $stmt->fetch(PDO::FETCH_ASSOC);
-        if ($admin && password_verify($password, $admin['password'])) {
-            $_SESSION['admin_id'] = $admin['admin_id'];
-            $_SESSION['user_type'] = 'admin'; // тип пользователя - админ
-            header("Location: /adminpage.php"); // страница администратора
+        $user = $stmt->fetch(PDO::FETCH_ASSOC);
+        
+        if ($user && password_verify($password, $user['password'])) {
+            // Если это обычный пользователь
+            $_SESSION['user_id'] = $user['user_id'];
+            $_SESSION['user_type'] = 'user';
+            header("Location: edit.php"); // Перенаправляем на страницу редактирования данных
             exit();
-        } else {
+        } 
+        else {
             echo "<p style='color:red;'>Неверный логин или пароль.</p>";
         }
     }
