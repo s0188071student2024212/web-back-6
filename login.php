@@ -9,7 +9,8 @@ $admin_user = $stmt->fetch(PDO::FETCH_ASSOC);
 // Если администратора нет, создаем его (логин: admin, пароль: admin123)
 if (!$admin_user) {
     $hashedPassword = password_hash('admin123', PASSWORD_DEFAULT);
-    $pdo->exec("INSERT INTO users (login, password, fio, is_admin) VALUES ('admin', '$hashedPassword', 'Администратор', 1)");
+    $pdo->exec("INSERT INTO users (login, password, fio, phone, email, dob, gender, bio, is_admin) 
+                VALUES ('admin', '$hashedPassword', 'Администратор', '0000000000', 'admin@example.com', '1970-01-01', 'male', 'Системный администратор', 1)");
 }
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
